@@ -23,7 +23,7 @@ help:
 deploy-artifact-bucket:
 	aws cloudformation deploy \
     		--stack-name $(ARTIFACT_BUCKET_STACK_NAME) \
-    		--template-file file://cloudformation/artifact-bucket.yaml \
+    		--template-file ./cloudformation/artifact-bucket.yaml \
     		--parameter-overrides BucketName=$(S3_BUCKET) \
     		--no-fail-on-empty-changeset
 	aws cloudformation wait stack-$$CFN_COMMAND-complete --stack-name $(NAME)
