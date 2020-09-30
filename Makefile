@@ -4,6 +4,7 @@ NAME=elastic-ip-manager
 AWS_REGION=eu-central-1
 S3_BUCKET_PREFIX=binxio-public
 S3_BUCKET=$(S3_BUCKET_PREFIX)-$(AWS_REGION)
+ARTIFACT_BUCKET_STACK_NAME=$(NAME)-artifacts
 
 ALL_REGIONS=$(shell printf "import boto3\nprint('\\\n'.join(map(lambda r: r['RegionName'], boto3.client('ec2').describe_regions()['Regions'])))\n" | python | grep -v '^$(AWS_REGION)$$')
 
@@ -19,7 +20,15 @@ help:
 	@echo 'make demo            - deploys the provider and the demo cloudformation stack.'
 	@echo 'make delete-demo     - deletes the demo cloudformation stack.'
 
-deploy: target/$(NAME)-$(VERSION).zip
+deploy-artifact-bucket:
+	aws cloudformation $$CFN_COMMAND-stack \
+    		--stack-name $(ARTIFACT_BUCKET_STACK_NAME) \
+    		--template-body file://cloudformation/artifact-bucket.yamlyaml \
+    		--parameters BucketName=$(S3_BUCKET) \
+    		--no-fail-on-empty-changeset
+	aws cloudformation wait stack-$$CFN_COMMAND-complete --stack-name $(NAME)
+
+deploy: deploy-artifact-bucket target/$(NAME)-$(VERSION).zip
 	aws s3 --region $(AWS_REGION) \
 		cp --acl \
 		public-read target/$(NAME)-$(VERSION).zip \
