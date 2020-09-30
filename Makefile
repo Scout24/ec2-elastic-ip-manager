@@ -26,7 +26,6 @@ deploy-artifact-bucket:
     		--template-file ./cloudformation/artifact-bucket.yaml \
     		--parameter-overrides BucketName=$(S3_BUCKET) \
     		--no-fail-on-empty-changeset
-	aws cloudformation wait stack-$$CFN_COMMAND-complete --stack-name $(NAME)
 
 deploy: deploy-artifact-bucket target/$(NAME)-$(VERSION).zip
 	aws s3 --region $(AWS_REGION) \
