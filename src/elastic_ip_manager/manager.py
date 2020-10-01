@@ -97,6 +97,7 @@ class Manager(object):
                         log.error(
                             f'failed to associate ip address "{allocation_id}" from "{self.pool_name}" to network interface {network_interface_id} of instance "{instance_id}", {e}'
                         )
+        log.info("add addresses somethings")
         put_cloudwatch_metric(self.pool_name)
 
     def remove_addresses(self, instance_id: str):
@@ -122,7 +123,7 @@ class Manager(object):
                     log.error(
                         f'failed to remove elastic ip address "{allocation_id}" from instance "{instance_id}", {e}'
                     )
-        log.info("somethings")
+        log.info("remove addresses somethings")
         put_cloudwatch_metric(self.pool_name)
 
 
