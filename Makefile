@@ -6,6 +6,7 @@ S3_BUCKET_PREFIX=binxio-public
 # S3_BUCKET=$(S3_BUCKET_PREFIX)-$(AWS_REGION)
 S3_BUCKET=fizz-service-shared-eip-manager-eu-west-1
 ARTIFACT_BUCKET_STACK_NAME=$(NAME)-artifacts
+BUILD_NUMBER=${BUILD_NUMBER:-latest}
 
 ALL_REGIONS=$(shell printf "import boto3\nprint('\\\n'.join(map(lambda r: r['RegionName'], boto3.client('ec2').describe_regions()['Regions'])))\n" | python | grep -v '^$(AWS_REGION)$$')
 
@@ -36,7 +37,7 @@ deploy: deploy-artifact-bucket target/$(NAME)-$(VERSION).zip
 	aws s3 --region $(AWS_REGION) \
 		cp --acl public-read \
 		s3://$(S3_BUCKET)/lambdas/$(NAME)-$(VERSION).zip \
-		s3://$(S3_BUCKET)/lambdas/$(NAME)-latest.zip 
+		s3://$(S3_BUCKET)/lambdas/$(NAME)-${BUILD_NUMBER}.zip
 
 deploy-all-regions: deploy
 	@for REGION in $(ALL_REGIONS); do \
@@ -48,7 +49,7 @@ deploy-all-regions: deploy
 		aws s3 --region $$REGION \
 			cp  --acl public-read \
 			s3://$(S3_BUCKET_PREFIX)-$$REGION/lambdas/$(NAME)-$(VERSION).zip \
-			s3://$(S3_BUCKET_PREFIX)-$$REGION/lambdas/$(NAME)-latest.zip; \
+			s3://$(S3_BUCKET_PREFIX)-$$REGION/lambdas/$(NAME)-${BUILD_NUMBER}.zip; \
 	done
 
 do-push: deploy
