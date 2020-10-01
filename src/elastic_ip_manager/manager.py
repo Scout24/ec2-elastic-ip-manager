@@ -122,6 +122,7 @@ class Manager(object):
                     log.error(
                         f'failed to remove elastic ip address "{allocation_id}" from instance "{instance_id}", {e}'
                     )
+        log.info("somethings")
         put_cloudwatch_metric(self.pool_name)
 
 
