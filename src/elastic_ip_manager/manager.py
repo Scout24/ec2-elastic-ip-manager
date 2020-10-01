@@ -77,28 +77,27 @@ class Manager(object):
             log.error(
                 f'No more IP addresses in the pool "{self.pool_name}" to assign to the instances'
             )
-            return
+        else:
+            if len(instances) > len(allocation_ids):
+                log.warning(
+                    f'The Elastic IP pool "{self.pool_name}" is short of {len(instances) - len(allocation_ids)} addresses'
+                )
 
-        if len(instances) > len(allocation_ids):
-            log.warning(
-                f'The Elastic IP pool "{self.pool_name}" is short of {len(instances) - len(allocation_ids)} addresses'
-            )
-
-        for instance_id, network_interface_id, allocation_id in [
-            (instances[i].instance_id, instances[i].primary_network_interface_id, allocation_ids[i])
-            for i in range(0, min(len(instances), len(allocation_ids)))
-        ]:
-            try:
-                log.info(
-                    f'associate ip address {allocation_id} from "{self.pool_name}" to network interface {network_interface_id} of instance {instance_id}'
-                )
-                ec2.associate_address(
-                    NetworkInterfaceId=network_interface_id, AllocationId=allocation_id
-                )
-            except ClientError as e:
-                log.error(
-                    f'failed to associate ip address "{allocation_id}" from "{self.pool_name}" to network interface {network_interface_id} of instance "{instance_id}", {e}'
-                )
+            for instance_id, network_interface_id, allocation_id in [
+                (instances[i].instance_id, instances[i].primary_network_interface_id, allocation_ids[i])
+                for i in range(0, min(len(instances), len(allocation_ids)))
+            ]:
+                try:
+                    log.info(
+                        f'associate ip address {allocation_id} from "{self.pool_name}" to network interface {network_interface_id} of instance {instance_id}'
+                    )
+                    ec2.associate_address(
+                        NetworkInterfaceId=network_interface_id, AllocationId=allocation_id
+                    )
+                except ClientError as e:
+                    log.error(
+                        f'failed to associate ip address "{allocation_id}" from "{self.pool_name}" to network interface {network_interface_id} of instance "{instance_id}", {e}'
+                    )
         put_cloudwatch_metric(self.pool_name)
 
     def remove_addresses(self, instance_id: str):
@@ -110,21 +109,20 @@ class Manager(object):
             log.info(
                 f'EIP from the pool {self.pool_name} no longer associated with instance "{instance_id}"'
             )
-            return
-
-        for allocation_id, association_id in map(
-            lambda a: (a.allocation_id, a.association_id),
-            self.instance_addresses(instance_id),
-        ):
-            try:
-                log.info(
-                    f'returning ip address "{allocation_id}" from instance "{instance_id}" to pool "{self.pool_name}"'
-                )
-                ec2.disassociate_address(AssociationId=association_id)
-            except ClientError as e:
-                log.error(
-                    f'failed to remove elastic ip address "{allocation_id}" from instance "{instance_id}", {e}'
-                )
+        else:
+            for allocation_id, association_id in map(
+                lambda a: (a.allocation_id, a.association_id),
+                self.instance_addresses(instance_id),
+            ):
+                try:
+                    log.info(
+                        f'returning ip address "{allocation_id}" from instance "{instance_id}" to pool "{self.pool_name}"'
+                    )
+                    ec2.disassociate_address(AssociationId=association_id)
+                except ClientError as e:
+                    log.error(
+                        f'failed to remove elastic ip address "{allocation_id}" from instance "{instance_id}", {e}'
+                    )
         put_cloudwatch_metric(self.pool_name)
 
 

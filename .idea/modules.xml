@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/asg-elastic-ip-manager.iml" filepath="$PROJECT_DIR$/.idea/asg-elastic-ip-manager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/ec2-elastic-ip-manager.iml" filepath="$PROJECT_DIR$/.idea/ec2-elastic-ip-manager.iml" />
     </modules>
   </component>
 </project>
