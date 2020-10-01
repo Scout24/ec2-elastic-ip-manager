@@ -15,12 +15,12 @@ from typing import List, Set, Optional
 from .eip import EIP, get_pool_addresses
 from .ec2_instance import EC2Instance, get_pool_instances, describe_pool_instance
 
-
 from botocore.exceptions import ClientError
 
 log = logging.getLogger()
 log.setLevel(os.environ.get("LOG_LEVEL", "INFO"))
 ec2 = boto3.client("ec2")
+cloudwatch = boto3.client("cloudwatch")
 
 
 class Manager(object):
@@ -99,6 +99,7 @@ class Manager(object):
                 log.error(
                     f'failed to associate ip address "{allocation_id}" from "{self.pool_name}" to network interface {network_interface_id} of instance "{instance_id}", {e}'
                 )
+        put_cloudwatch_metric(self.pool_name)
 
     def remove_addresses(self, instance_id: str):
         """
@@ -124,6 +125,7 @@ class Manager(object):
                 log.error(
                     f'failed to remove elastic ip address "{allocation_id}" from instance "{instance_id}", {e}'
                 )
+        put_cloudwatch_metric(self.pool_name)
 
 
 def is_state_change_event(event):
@@ -160,6 +162,32 @@ def get_all_pool_names() -> List[str]:
     ):
         result.extend(values["TagValues"])
     return result
+
+
+def put_cloudwatch_metric(pool_name: str):
+    """
+    Puts a customs metric indicating how many free EIPs remaining in a specific pool
+    :param pool_name: the pool from which the EIP will be assigned
+    """
+    remaining_eips = len(get_pool_addresses(pool_name))
+    response = cloudwatch.put_metric_data(
+        MetricData=[
+            {
+                'MetricName': 'Available-EIPs',
+                'Dimensions': [
+                    {
+                        'Name': 'PoolName',
+                        'Value': pool_name
+                    }
+                ],
+                'Unit': 'None',
+                'Value': remaining_eips
+            },
+        ],
+        Namespace='S24/FiZZ'
+    )
+
+    log.debug(response)
 
 
 def handler(event: dict, context: dict):

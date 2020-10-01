@@ -44,6 +44,16 @@ Resources:
               Service:
                 - lambda.amazonaws.com
             Action: sts:AssumeRole
+      Policies:
+        - PolicyName: custom-metrics
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudwatch:PutMetricData
+                Resource: "*"
+
 
   Function:
     Type: AWS::Lambda::Function

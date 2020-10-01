@@ -3,7 +3,8 @@ include Makefile.mk
 NAME=elastic-ip-manager
 AWS_REGION=eu-central-1
 S3_BUCKET_PREFIX=binxio-public
-S3_BUCKET=$(S3_BUCKET_PREFIX)-$(AWS_REGION)
+# S3_BUCKET=$(S3_BUCKET_PREFIX)-$(AWS_REGION)
+S3_BUCKET=fizz-service-shared-eip-manager-eu-west-1
 ARTIFACT_BUCKET_STACK_NAME=$(NAME)-artifacts
 
 ALL_REGIONS=$(shell printf "import boto3\nprint('\\\n'.join(map(lambda r: r['RegionName'], boto3.client('ec2').describe_regions()['Regions'])))\n" | python | grep -v '^$(AWS_REGION)$$')
