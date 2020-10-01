@@ -70,34 +70,33 @@ class Manager(object):
             log.info(
                 f'All instances in the EIP pool "{self.pool_name}" are associated with an EIP'
             )
-            return
-
-        allocation_ids = list(map(lambda a: a.allocation_id, self.available_addresses))
-        if not allocation_ids:
-            log.error(
-                f'No more IP addresses in the pool "{self.pool_name}" to assign to the instances'
-            )
         else:
-            if len(instances) > len(allocation_ids):
-                log.warning(
-                    f'The Elastic IP pool "{self.pool_name}" is short of {len(instances) - len(allocation_ids)} addresses'
+            allocation_ids = list(map(lambda a: a.allocation_id, self.available_addresses))
+            if not allocation_ids:
+                log.error(
+                    f'No more IP addresses in the pool "{self.pool_name}" to assign to the instances'
                 )
+            else:
+                if len(instances) > len(allocation_ids):
+                    log.warning(
+                        f'The Elastic IP pool "{self.pool_name}" is short of {len(instances) - len(allocation_ids)} addresses'
+                    )
 
-            for instance_id, network_interface_id, allocation_id in [
-                (instances[i].instance_id, instances[i].primary_network_interface_id, allocation_ids[i])
-                for i in range(0, min(len(instances), len(allocation_ids)))
-            ]:
-                try:
-                    log.info(
-                        f'associate ip address {allocation_id} from "{self.pool_name}" to network interface {network_interface_id} of instance {instance_id}'
-                    )
-                    ec2.associate_address(
-                        NetworkInterfaceId=network_interface_id, AllocationId=allocation_id
-                    )
-                except ClientError as e:
-                    log.error(
-                        f'failed to associate ip address "{allocation_id}" from "{self.pool_name}" to network interface {network_interface_id} of instance "{instance_id}", {e}'
-                    )
+                for instance_id, network_interface_id, allocation_id in [
+                    (instances[i].instance_id, instances[i].primary_network_interface_id, allocation_ids[i])
+                    for i in range(0, min(len(instances), len(allocation_ids)))
+                ]:
+                    try:
+                        log.info(
+                            f'associate ip address {allocation_id} from "{self.pool_name}" to network interface {network_interface_id} of instance {instance_id}'
+                        )
+                        ec2.associate_address(
+                            NetworkInterfaceId=network_interface_id, AllocationId=allocation_id
+                        )
+                    except ClientError as e:
+                        log.error(
+                            f'failed to associate ip address "{allocation_id}" from "{self.pool_name}" to network interface {network_interface_id} of instance "{instance_id}", {e}'
+                        )
         put_cloudwatch_metric(self.pool_name)
 
     def remove_addresses(self, instance_id: str):
