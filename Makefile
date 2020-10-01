@@ -33,10 +33,6 @@ deploy: deploy-artifact-bucket target/$(NAME)-$(VERSION).zip
 	aws s3 --region $(AWS_REGION) \
 		cp --acl \
 		public-read target/$(NAME)-$(VERSION).zip \
-		s3://$(S3_BUCKET)/lambdas/$(NAME)-$(VERSION).zip 
-	aws s3 --region $(AWS_REGION) \
-		cp --acl public-read \
-		s3://$(S3_BUCKET)/lambdas/$(NAME)-$(VERSION).zip \
 		s3://$(S3_BUCKET)/lambdas/$(NAME)-${BUILD_NUMBER}.zip
 
 deploy-all-regions: deploy
