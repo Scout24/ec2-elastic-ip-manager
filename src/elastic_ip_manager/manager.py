@@ -176,7 +176,7 @@ def put_cloudwatch_metric(pool_name: str):
                 'MetricName': 'Available-EIPs',
                 'Dimensions': [
                     {
-                        'Name': 'PoolName',
+                        'Name': 'EipPoolName',
                         'Value': pool_name
                     }
                 ],
