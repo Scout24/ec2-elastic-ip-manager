@@ -167,7 +167,7 @@ def put_cloudwatch_metric(pool_name: str):
     Puts a customs metric indicating how many free EIPs remaining in a specific pool
     :param pool_name: the pool from which the EIP will be assigned
     """
-    log.info("Putting remaining ips metric")
+    log.info("Putting remaining elastic ips metric")
     remaining_eips = len(list(filter(lambda eip: "AssociationId" not in eip, get_pool_addresses(pool_name))))
     log.info(f"Free elastic IPs remaining {remaining_eips}")
     response = cloudwatch.put_metric_data(
