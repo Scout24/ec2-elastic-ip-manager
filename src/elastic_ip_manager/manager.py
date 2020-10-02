@@ -169,6 +169,7 @@ def put_cloudwatch_metric(pool_name: str):
     """
     log.info("Putting remaining ips metric")
     remaining_eips = len(get_pool_addresses(pool_name))
+    log.info(f"Free elastic IPs remaining {remaining_eips}")
     response = cloudwatch.put_metric_data(
         MetricData=[
             {
