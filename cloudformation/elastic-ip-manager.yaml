@@ -110,6 +110,7 @@ Resources:
   OpsGenieTopic:
     Type: AWS::SNS::Topic
     Properties:
+      KmsMasterKeyId: 'alias/aws/sns'
       Subscription:
         - Endpoint: !Sub https://api.opsgenie.com/v1/json/cloudwatch?apiKey=${OpsGenieKey}
           Protocol: https
