@@ -74,18 +74,19 @@ If an auto scaling group with instances already exist,
 That is all. If you want to see it all in action, deploy the demo.
 
 ## Deploy the demo
-In order to deploy the demo, type:
 
+### Using CloudFormation Stack
+
+Run these commands to deploy the demo using CloudFormation Stack:
 ```sh
 export VPC_ID=$(aws ec2  --output text --query 'Vpcs[?IsDefault].VpcId' describe-vpcs)
 export SUBNET_IDS=$(aws ec2 describe-subnets --output text \
---filters Name=vpc-id,Values=$VPC_ID Name=default-for-az,Values=true --query 'Subnets[?MapPublicIpOnLaunch].SubnetId' | \
-tr '\t', '\,')
+  --filters Name=vpc-id,Values=$VPC_ID Name=default-for-az,Values=true --query 'Subnets[?MapPublicIpOnLaunch].SubnetId' \
+  | tr '\t', '\,')
 
-aws cloudformation create-stack --stack-name elastic-ip-manager-demo\
-     --template-body file://./cloudformation/demo-stack.yaml\
+aws cloudformation create-stack --stack-name elastic-ip-manager-demo \
+     --template-body file://./cloudformation/demo-stack.yaml \
      --parameters ParameterKey=VPC,ParameterValue=$VPC_ID ParameterKey=Subnets,ParameterValue=\"$SUBNET_IDS\"
-
 ```
 
 ## Alternatives
