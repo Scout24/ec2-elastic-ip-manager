@@ -4,7 +4,7 @@ NAME=elastic-ip-manager
 AWS_REGION=eu-central-1
 S3_BUCKET_PREFIX=binxio-public
 # S3_BUCKET=$(S3_BUCKET_PREFIX)-$(AWS_REGION)
-S3_BUCKET=fizz-service-shared-eip-manager-eu-west-1
+S3_BUCKET=test-fizz-service-shared-eip-manager-eu-west-1
 ARTIFACT_BUCKET_STACK_NAME=$(NAME)-artifacts
 BUILD_NUMBER=${BUILD_NUMBER:-latest}
 
