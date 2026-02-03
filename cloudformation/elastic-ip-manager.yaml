@@ -113,6 +113,8 @@ Resources:
       Subscription:
         - Endpoint: !Sub https://api.opsgenie.com/v1/json/cloudwatch?apiKey=${OpsGenieKey}
           Protocol: https
+        - Endpoint: '{{resolve:ssm:/incident-io/cloudwatch-alert-endpoint}}' 
+          Protocol: https
       TopicName: !Sub ${AWS::StackName}-opsgenie-de
 
   ## Alarms
