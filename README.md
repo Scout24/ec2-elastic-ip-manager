@@ -7,6 +7,8 @@ ip is assigned to it.
 The manager will listen to all EC2 instance state change notifications. When an instance with the tag `elastic-ip-manager-pool` 
 reaches the state running, it will assign a free elastic ip addresses with the same tag and tag value.
 
+In the Ec2 AWS console under Elastic IPs it is possible to see the IPs available and in use by checking the associated tag. 
+
 ## How do I use it?
 You can start using the elastic IP manager, in two simple steps:
 
@@ -88,6 +90,8 @@ aws cloudformation create-stack --stack-name elastic-ip-manager-demo \
      --template-body file://./cloudformation/demo-stack.yaml \
      --parameters ParameterKey=VPC,ParameterValue=$VPC_ID ParameterKey=Subnets,ParameterValue=\"$SUBNET_IDS\"
 ```
+## Requesting more IPs
+The ticket [elastic ip pool on jenkins exhausts from time to time](https://linear.app/scout24-se/issue/DX-1061) contains an analysis of the issue for FiZZ and implies a support case was needed to request more IPs.
 
 ## Alternatives
 There are two alternative solutions to achieve the same functionality:
