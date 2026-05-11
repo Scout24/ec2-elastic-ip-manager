@@ -9,6 +9,9 @@ reaches the state running, it will assign a free elastic ip addresses with the s
 
 In the Ec2 AWS console under Elastic IPs it is possible to see the IPs available and in use by checking the associated tag. 
 
+## Prerequisites
+Local development and packaging now target `Python 3.14`.
+
 ## How do I use it?
 You can start using the elastic IP manager, in two simple steps:
 
